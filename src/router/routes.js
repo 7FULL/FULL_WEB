@@ -14,35 +14,14 @@ const routes = [
         component: () => import("pages/ViewProfile.vue"),
       },
       {
-        name: "profile",
-        path: "/profile/:name",
-        component: () => import("pages/Profile.vue"),
-      },
-      {
-        name: "streaming",
-        path: "/streaming/:name",
-        component: () => import("pages/ViewStreaming.vue"),
-      },
-      {
-        name: "streamings",
-        path: "/streamings",
-        component: () => import("pages/StreamingList.vue"),
-      },
-      {
-        name: "dms",
-        path: "/dms",
-        component: () => import("pages/DirectMessages.vue"),
-      },
-      {
-        name: "dm",
-        path: "/dm/:name",
-        component: () => import("pages/DirectMessage.vue"),
-      },
-      {
         name: "passwordRecovery",
         path: "/recoveryPassword/:token",
         component: () => import("pages/PasswordRecovery.vue"),
       },
+      { path: "tareas", component: () => import("pages/johan/TareasPage.vue") },
+      { path: "facturas", component: () => import("pages/johan/FacturasPage.vue") },
+      { path: "balance", component: () => import("pages/johan/BalancePage.vue") },
+      { path: "proyecto", component: () => import("pages/johan/ProyectoPage.vue") },
       //Para los 404
       {
         path: "/:catchAll(.*)*",

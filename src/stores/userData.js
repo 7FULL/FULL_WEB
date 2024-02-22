@@ -4,23 +4,27 @@ export const userDataStore = defineStore("userDataStore", () => {
   let logged = false;
 
   const userData = {
-    profile: "src/assets/img/logoUserDefault.png",
+    id: "",
     name: "",
+    surname: "",
+    username: "",
+    password: "",
     email: "",
     phone: "",
-    emailVerified: "",
-    description: "",
-    streamKey: "",
+    clients: [],
+    bills: [],
+    role: "",
+    appointments: [],
   };
 
   const resetData = () => {
-    userData.value.profile = "src/assets/img/logoUserDefault.png";
-    userData.value.name = "";
-    userData.value.email = "";
-    userData.value.phone = "";
-    userData.value.emailVerified = "";
-    userData.value.description = "";
-    userData.value.streamKey = "";
+    userData.id = "";
+    userData.clients = [];
+    userData.bills = [];
+    userData.username = "";
+    userData.email = "";
+    userData.phone = "";
+
     logged = false;
   };
 

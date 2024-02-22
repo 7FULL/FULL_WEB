@@ -10,12 +10,12 @@
         />
         <q-tab-panels v-model="activeTab" animated class="wxl">
           <q-tab-panel name="login" class="q-pt-xs q-pb-xs">
-            <h2 class="text-h6 q-mt-xs">Iniciar sesión</h2>
+            <h2 class="text-h6 q-mt-xs">{{ t("loginTab") }}</h2>
             <q-form @submit="login">
-              <q-input v-model="loginData.username" label="Usuario" required />
+              <q-input v-model="loginData.username" :label="t('user')" required />
               <q-input
                 v-model="loginData.password"
-                label="Contraseña"
+                :label="t('password')"
                 :type="showEyeLogin ? 'password' : 'text'"
                 required
                 minlength="7"
@@ -31,14 +31,14 @@
               <q-item side inset-separator v-ripple class="q-mt-sm">
                 <q-item-section>
                   <a href="#" class="text-primary" @click="restorePasswordPopUp"
-                    >¿Olvidaste tu contraseña?</a
+                    >{{ t("notRememberPassword") }}</a
                   >
                 </q-item-section>
               </q-item>
               <q-item class="pl-0">
                 <q-checkbox
                   v-model="loginData.remember"
-                  label="Recordarme"
+                  :label="t('rememberMe')"
                   class="flex"
                 />
               </q-item>
@@ -46,7 +46,7 @@
               <q-card-actions>
                 <q-btn
                   color="primary"
-                  label="Confirmar"
+                  :label="t('confirm')"
                   type="submit"
                   class="wxl"
                 />
@@ -54,22 +54,22 @@
             </q-form>
           </q-tab-panel>
           <q-tab-panel name="register" class="q-pt-xs q-pb-xs">
-            <h2 class="text-h6 q-mt-xs">Registrarse</h2>
+            <h2 class="text-h6 q-mt-xs">{{ t("register") }}</h2>
             <q-form @submit="register">
               <q-input
                 v-model="registerData.username"
-                label="Nombre"
+                :label="t('name')"
                 required
               />
               <q-input
                 v-model="registerData.email"
-                label="Correo electrónico"
+                :label="t('email')"
                 type="email"
                 required
               />
               <q-input
                 v-model="registerData.password"
-                label="Contraseña"
+                :label="t('password')"
                 :type="showEye ? 'password' : 'text'"
                 required
                 minlength="7"
@@ -84,7 +84,7 @@
               </q-input>
               <q-input
                 v-model="registerData.confirmPassword"
-                label="Confirmar contraseña"
+                :label="t('confirmPassword')"
                 :type="showEyeConfirm ? 'password' : 'text'"
                 required
                 minlength="7"
@@ -99,7 +99,7 @@
               </q-input>
               <q-input
                 v-model="registerData.phone"
-                label="Número de teléfono"
+                :label="t('phoneNumber')"
                 type="tel"
                 required
                 class="q-mb-md"
@@ -111,13 +111,13 @@
                 required
                 class="q-mt-sm"
               >
-                Acepto los términos y condiciones
+                {{ t("agree") }}
               </q-checkbox>
               <GoogleLogin :callback="googleRegistered" />
               <q-card-actions>
                 <q-btn
                   color="primary"
-                  label="Confirmar"
+                  :label="t('confirm')"
                   type="submit"
                   class="wxl"
                 />
@@ -153,8 +153,8 @@
   <!-- PopUp para el has olvidado la contraseña -->
   <PopUp
     :open="restorePassword"
-    title="Recuperacion de contraseña"
-    msg="Se ha enviado un correo electrónico a tu cuenta de correo electrónico. Sigue las instrucciones para recuperar tu contraseña."
+    :title="t('restorePasswordTitle')"
+    :msg="t('restorePasswordMSG')"
     :persistent="true"
     :cancel="false"
     :input="false"
@@ -170,8 +170,13 @@ import { userDataStore } from "../stores/userData.js";
 import { useQuasar } from "quasar";
 import { decodeCredential } from "vue3-google-login";
 import PopUp from "./PopUp.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const showEyeConfirm = ref(true);
+
+const basicAuth = 'Basic ' + btoa("user" + ':' + "user");
 
 const showEye = ref(true);
 
@@ -184,35 +189,38 @@ const restorePassword = ref(false);
 const restorePasswordPopUp = () => {
   if (loginData.value.username == "") {
     showNotif(
-      "Debes introducir un nombre de usuario o correo electrónico",
+      t("restorePasswordErrorNoUsername"),
       "red-5"
     );
     return;
   }
 
   fetch(
-    "http://localhost:5000/api/users/passWordRecovery/" +
+    "http://localhost:8080/api/employee/forgotPassword?email=" +
       loginData.value.username,
     {
-      method: "POST",
+      method: "GET",
+      headers: {
+        'Authorization': basicAuth,
+      },
     }
   )
     .then((response) => response.json())
     .then(async (data) => {
       console.log(data);
-      if (data.status == 200 || data.status == 404) {
+      if (data.code == 200 || data.code == 404) {
         restorePassword.value = true;
       } else {
         error.value.type = true;
         error.value.message =
-          "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+          t("serverErrorMSG");
       }
     })
     .catch((exception) => {
       console.log(exception);
       error.value.type = true;
       error.value.message =
-        "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+        t("serverErrorMSG");
     });
 
   restorePassword.value = true;
@@ -232,18 +240,18 @@ onMounted(() => {
 const tabs = [
   {
     name: "login",
-    label: "Iniciar sesión",
+    label: t("loginTab"),
   },
   {
     name: "register",
-    label: "Registrarse",
+    label: t("register"),
   },
 ];
 
 const emailVerified = () => {
   userData.value.emailVerified = true;
   userStore.userData = userData.value;
-  showNotif("Email verificado correctamente");
+  showNotif(t("emailVerifiedMSG"));
 };
 
 const googleLogged = (response) => {
@@ -309,11 +317,11 @@ const registerData = ref({
 });
 
 const userData = ref({
-  profile: "src/assets/img/logoUserDefault.png",
-  name: "",
+  clients: [],
+  bills: [],
   email: "",
   phone: "",
-  emailVerified: "",
+  username: "",
 });
 
 const clearError = () => {
@@ -352,72 +360,52 @@ const closeModal = () => {
 
 const logged = async (name = "") => {
   if (name != "") {
-    userData.value.name = name;
+    userData.value.username = name;
   }
 
   let id = "";
 
-  if (userData.value.name != "") {
-    id = userData.value.name;
+  if (userData.value.username != "") {
+    id = userData.value.username;
   } else {
     id = userData.value.email;
   }
 
   // En caso de que el usuario haya clickeado en recuerdame guardamos su nombre de usuario en el local storage
   if (loginData.value.remember) {
-    localStorage.setItem("username", userData.value.name);
+    localStorage.setItem("username", userData.value.username);
   } else {
     localStorage.removeItem("username");
   }
 
-  let aux = null;
-
   //Obtener los datos que nos faltan de la base de datos
-  await fetch("http://127.0.0.1:5000/api/users/" + id)
+  await fetch("http://127.0.0.1:8080/api/employee/getEmployee?username=" + id, {
+    headers: {
+      'Authorization': basicAuth,
+    },
+  })
     .then((response) => response.json())
     .then(async (data) => {
       console.log(data);
 
-      if (data.status == 200) {
-        userData.value.phone = data.result.phone;
-        userData.value.description = data.result.description;
-        userData.value.name = data.result.username;
-        userData.value.email = data.result.email;
-        userData.value.emailVerified = data.result.emailVerified;
-        userData.value.streamKey = data.result.streamKey;
-
-        //console.log(userData.value);
-
-        if (data.result.profile != "") {
-          userData.value.profile = data.result.profile;
-
-          await fetch(
-            "http://127.0.0.1:5000/api/users/profile/" + userData.value.name
-          )
-            .then((response) => response.blob())
-            .then((blob) => {
-              // Crear una URL de objeto para la imagen
-              const imageUrl = URL.createObjectURL(blob);
-
-              aux = imageUrl;
-            })
-            .catch((exception) => {
-              console.log(exception);
-              error.value.type = true;
-              error.value.message =
-                "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
-            });
-        }
+      if (data.code == 200) {
+        userData.value.id = data.data.id;
+        userData.value.password = "********";
+        userData.value.role = 0;
+        userData.value.surname = data.data.surname;
+        userData.value.name = data.data.name;
+        userData.value.bills = data.data.bills;
+        userData.value.clients = data.data.clients;
+        userData.value.email = data.data.email;
+        userData.value.phone = data.data.phone;
+        userData.value.username = data.data.username;
+        userData.value.appointments = data.data.appointments;
 
         userStore.userData = userData.value;
 
         userStore.logged = true;
 
-        if (!userData.value.emailVerified) {
-          isVerifying.value = true;
-        }
-
-        showNotif("Bienvenido/a de vuelta " + userData.value.name);
+        showNotif(t("welcomeBack") + userData.value.username);
         emit("logged");
       } else if (data.status == 404) {
         error.value.type = true;
@@ -425,18 +413,14 @@ const logged = async (name = "") => {
       } else {
         error.value.type = true;
         error.value.message =
-          "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
-      }
-
-      if (aux != null) {
-        userData.value.profile = aux;
+          t("serverErrorMSG");
       }
     })
     .catch((exception) => {
       console.log(exception);
       error.value.type = true;
       error.value.message =
-        "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+        t("serverErrorMSG");
     });
 };
 
@@ -445,6 +429,7 @@ const switchTab = (tab) => {
 };
 
 // Hay que hacerla asíncrona para poder esperar al token
+
 const login = async (e) => {
   e.preventDefault();
 
@@ -460,41 +445,43 @@ const login = async (e) => {
   const token = await captchaV3();
   loginData.value.token = token;
 
-  userData.value.name = loginData.value.username;
+  userData.value.username = loginData.value.username;
 
-  fetch("http://127.0.0.1:5000/api/users/login", {
+  fetch("http://localhost:8080/api/employee/login", {
     method: "POST",
     headers: {
+      'Authorization': basicAuth,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(loginData.value),
   })
     .then((response) => response.json())
     .then((data) => {
-      if (data.status == 200 || data.status == 401) {
-        if (data.result == true) {
+      console.log(data);
+      if (data.code == 200 || data.code == 401) {
+        if (data.code == 200) {
           closeModal();
           logged();
         } else {
           //Usuario incorrecto
           error.value.type = true;
-          error.value.message = data.error;
+          error.value.message = t("userOrPasswordError");
         }
         //Captcha no válido o caducado
-      } else if (data.status == 498) {
+      } else if (data.code == 498) {
         error.value.type = true;
-        error.value.message = data.error;
+        error.value.message = t("recaptachaIncalid");
       } else {
         error.value.type = true;
         error.value.message =
-          "Parece que hay un problema con nuestras bases de datos. Inténtelo de nuevo más tarde";
+          t("bbddErrorMSG");
       }
     })
     .catch((exception) => {
       console.log(exception);
       error.value.type = true;
       error.value.message =
-        "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+        t("serverErrorMSG");
     });
 
   // Resetear el formulario
@@ -510,7 +497,7 @@ const register = async (e) => {
 
   if (registerData.value.password != registerData.value.confirmPassword) {
     error.value.type = true;
-    error.value.message = "Las contraseñas no coinciden";
+    error.value.message = t("passwordNotMatch");
   } else if (registerData.value.agree == true && registerData.value.captcha) {
     if (!registerData.value.username.includes("@")) {
       userData.value.name = registerData.value.username;
@@ -534,26 +521,26 @@ const register = async (e) => {
         } else if (data.status == 409) {
           error.value.type = true;
           error.value.message =
-            "El nombre de usuario o el correo electrónico ya están en uso";
+            t("userAlreadyExists");
         } else {
           error.value.type = true;
           error.value.message =
-            "Parece que hay un problema con nuestras bases de datos. Inténtelo de nuevo más tarde";
+            t("bbddErrorMSG");
         }
       })
       .catch((exception) => {
         console.log(exception);
         error.value.type = true;
         error.value.message =
-          "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+          t("serverErrorMSG");
       });
   } else {
     if (!registerData.value.captcha) {
       error.value.type = true;
-      error.value.message = "Debes completar el captcha";
+      error.value.message = t("captchaError")
     } else {
       error.value.type = true;
-      error.value.message = "Debe aceptar los términos y condiciones";
+      error.value.message = t("agreeError")
     }
   }
 

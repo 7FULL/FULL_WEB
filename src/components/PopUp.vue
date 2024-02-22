@@ -22,7 +22,7 @@
         <q-card-actions align="right">
           <q-btn
             v-if="cancel"
-            :label="cancelText ? cancelText : 'Ya lo hare mas tarde'"
+            :label="cancelText ? cancelText : $t('popUpDefault')"
             color="negative"
             outline
             v-close-popup

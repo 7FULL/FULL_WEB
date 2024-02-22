@@ -1,8 +1,8 @@
 <template>
   <PopUp
     :open="isVerifying"
-    msg="Parece que no tienes verificado tu email. ¿Quieres hacerlo ahora?"
-    title="Verificar email"
+    :msg="$t('notVerifiedMSG')"
+    :title="$t('notVerifiedTitle')"
     persistent="true"
     cancel="true"
     @closed="isVerifyingEmail"
@@ -10,8 +10,8 @@
 
   <PopUp
     :open="isVerifyingEmailPopUp"
-    msg="Introduce el token que te hemos enviado a tu correo electrónico"
-    title="Verificar email"
+    :msg="$t('verifyingEmailMSG')"
+    :title="$t('verifyingEmailTitle')"
     persistent="true"
     input="true"
     @closed="checkToken"
@@ -70,7 +70,7 @@ const isVerifyingEmail = () => {
       if (data.status != 200) {
         emailPopUp.value.type = 1;
         emailPopUp.value.message =
-          "Parece que hubo un problema con tu token de autenticación, por favor intenta de nuevo mas tarde";
+          $t("tokenErrorMSG");
       }
     });
 };
@@ -99,12 +99,12 @@ const checkToken = (userInput) => {
         emit("verified");
       } else if (data.status == 401) {
         error.value.type = true;
-        error.value.message = "Token incorrecto";
+        error.value.message = $t('tokenDifferentMSG');
         isVerifying.value = false;
       } else {
         error.value.type = true;
         error.value.message =
-          "Parece que hubo un problema con nuestras bases de datos, porfavor intentelo de nuevo mas tarde";
+          $t("bbddErrorMSG");
       }
 
       verification.value.token = "";
@@ -113,7 +113,7 @@ const checkToken = (userInput) => {
       console.error("Error:", exception);
       error.value.type = true;
       error.value.message =
-        "Parece que hubo un problema con nuestros servidores, porfavor intentelo de nuevo mas tarde";
+        $t("serverErrorMSG");
     });
 };
 </script>

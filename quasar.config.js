@@ -9,6 +9,7 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
 const { configure } = require("quasar/wrappers");
+const path = require('node:path')
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -28,12 +29,9 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli/boot-files
     boot: [
-      {
-        path: "vueRecaptchaInitialization.js",
-      },
-      {
-        path: "googleLogin.js",
-      },
+      "vueRecaptchaInitialization.js",
+      "googleLogin.js",
+      "i18n.js"
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -82,6 +80,22 @@ module.exports = configure(function (/* ctx */) {
       // vitePlugins: [
       //   [ 'package-name', { ..options.. } ]
       // ]
+      chainWebpack: chain => {
+        chain.module
+          .rule('i18n-resource')
+          .test(/\.(json5?|ya?ml)$/)
+          .include.add(path.resolve(__dirname, './src/i18n'))
+          .end()
+          .type('javascript/auto')
+          .use('i18n-resource')
+          .loader('@intlify/vue-i18n-loader')
+        chain.module
+          .rule('i18n')
+          .resourceQuery(/blockType=i18n/)
+          .type('javascript/auto')
+          .use('i18n')
+          .loader('@intlify/vue-i18n-loader')
+      }
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
@@ -93,7 +107,22 @@ module.exports = configure(function (/* ctx */) {
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
     framework: {
       all: true, // --- includes everything; for dev only!
-      config: {},
+      config: {
+        brand: {
+          primary: '#1976d2',
+          secondary: '#26a69a',
+          accent: '#9c27b0',
+
+          //dark: '#8f92a1',
+          dark: '#1d1d1d',
+          'dark-page': '#121212',
+
+          positive: '#21ba45',
+          negative: '#c10015',
+          info: '#31ccec',
+          warning: '#F2C037'
+        }
+      },
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
