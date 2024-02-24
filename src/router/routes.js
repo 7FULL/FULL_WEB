@@ -18,10 +18,10 @@ const routes = [
         path: "/recoveryPassword/:token",
         component: () => import("pages/PasswordRecovery.vue"),
       },
-      { path: "tareas", component: () => import("pages/johan/TareasPage.vue") },
-      { path: "facturas", component: () => import("pages/johan/FacturasPage.vue") },
-      { path: "balance", component: () => import("pages/johan/BalancePage.vue") },
-      { path: "proyecto", component: () => import("pages/johan/ProyectoPage.vue") },
+      { path: "tareas", component: () => import("pages/TareasPage.vue") },
+      { path: "facturas", component: () => import("pages/FacturasPage.vue") },
+      { path: "balance", component: () => import("pages/BalancePage.vue") },
+      { path: "personal", component: () => import("pages/PersonalPage.vue") },
       //Para los 404
       {
         path: "/:catchAll(.*)*",

@@ -229,7 +229,7 @@ const linksList = [
   },
   {
     title: "Tareas",
-    caption: "Tareas del Proyecto",
+    caption: "Administra tus tareas",
     icon: "task",
     link: "Tareas",
   },
@@ -246,10 +246,10 @@ const linksList = [
     link: "Balance",
   },
   {
-    title: "Proyecto",
-    caption: "Proyectos",
-    icon: "work",
-    link: "Proyecto",
+    title: "Personal",
+    caption: "Gestión de personal",
+    icon: "people",
+    link: "Personal",
   },
 ];
 

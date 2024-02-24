@@ -1,17 +1,16 @@
 <template>
   <q-page class="q-pa-md">
     <q-toolbar>
-      <q-toolbar-title>Balance de Ventas y Compras</q-toolbar-title>
+      <q-toolbar-title>Balance de facturas emitidas y recibidas</q-toolbar-title>
     </q-toolbar>
 
     <!-- Selector de Año -->
     <div class="q-mt-md q-mb-md">
-      <q-select filled v-model="anioSeleccionado" :options="opcionesAnios" label="Seleccione el año"
-        @input="actualizarGrafico" />
+      <q-select filled v-model="anioSeleccionado" :options="opcionesAnios" label="Seleccione el año"/>
     </div>
 
     <!-- Gráfico de Ventas y Compras -->
-    <div>
+    <div class="q-ma-xl">
       <canvas id="balanceChart"></canvas>
     </div>
   </q-page>
@@ -19,54 +18,80 @@
 
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, computed, watch} from 'vue';
 import { Chart, registerables } from 'chart.js';
+import {userDataStore} from "stores/userData";
 Chart.register(...registerables);
 
-// Ejemplo de datos simulados, reemplaza con la lógica de obtención de datos reales
-const ventas = ref([
-  // { fecha: '2024-01-15', total: 100 },
-  // { fecha: '2024-02-15', total: 150 },
-  // Asume datos similares para 'compras'
-]);
-const compras = ref([
-  // { fecha: '2024-01-20', costo: 80 },
-  // { fecha: '2024-02-25', costo: 120 },
-  // Asume datos similares para 'ventas'
-]);
+const userStore = userDataStore();
+
+const facturas = ref([]);
+const facturasEmitidas = computed(() => {
+  let aux = facturas.value.filter(f => {
+    return f.sent === true;
+  })
+
+  return aux;
+});
+const facturasRecibidas = computed(() => {
+  let aux = facturas.value.filter(f => {
+    return f.sent === false;
+  })
+
+  return aux;
+});
+const facturasTodas = computed(() => {
+  // Filtrar por estado de la factura
+  if (filtroFacturaTodas.value.value === 'Todas' || filtroFacturaTodas.value.value === undefined) {
+    return facturas.value;
+  } else {
+    return facturas.value.filter(f => {
+      return estadoFactura(f) === filtroFacturaTodas.value.value
+    });
+  }
+});
+
+onMounted(() => {
+  facturas.value = userStore.userData.bills;
+});
 
 const anioSeleccionado = ref(new Date().getFullYear());
 const opcionesAnios = ref([
   // Opciones de años para el selector, por ejemplo:
-  2022, 2023, 2024
+  2023, 2024
 ].map(year => ({ label: year.toString(), value: year })));
 
 const calcularTotalesPorMes = (items, year) => {
   const totales = Array(12).fill(0);
   items.forEach(item => {
-    const fecha = new Date(item.fecha);
-    if (fecha.getFullYear() === year) {
+    const fecha = new Date(item.expirationDate);
+
+    if (fecha.getFullYear() === year.value) {
       const mes = fecha.getMonth();
-      totales[mes] += item.total || item.costo;
+      totales[mes] += item.total || item.price;
     }
   });
   return totales;
 };
 
+watch(anioSeleccionado, () => {
+  actualizarGrafico();
+});
+
 const actualizarGrafico = () => {
-  const dataVentas = calcularTotalesPorMes(ventas.value, anioSeleccionado.value);
-  const dataCompras = calcularTotalesPorMes(compras.value, anioSeleccionado.value);
+  const dataVentas = calcularTotalesPorMes(facturasEmitidas.value, anioSeleccionado.value);
+  const dataCompras = calcularTotalesPorMes(facturasRecibidas.value, anioSeleccionado.value);
 
   const data = {
     labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
     datasets: [
       {
-        label: 'Ventas',
+        label: 'Dinero en facturas emitidas',
         backgroundColor: 'rgb(54, 162, 235)',
         data: dataVentas,
       },
       {
-        label: 'Compras',
+        label: 'Dinero en facturas recibidas',
         backgroundColor: 'rgb(255, 99, 132)',
         data: dataCompras,
       }
@@ -93,6 +118,7 @@ const actualizarGrafico = () => {
 };
 
 onMounted(() => {
+  anioSeleccionado.value = opcionesAnios.value[0];
   actualizarGrafico();
 });
 </script>
