@@ -391,7 +391,7 @@ const logged = async (name = "") => {
       if (data.code == 200) {
         userData.value.id = data.data.id;
         userData.value.password = "********";
-        userData.value.role = 0;
+        userData.value.role = data.data.role;
         userData.value.surname = data.data.surname;
         userData.value.name = data.data.name;
         userData.value.bills = data.data.bills;

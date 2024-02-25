@@ -60,11 +60,11 @@
           </q-item>
 
           <q-list bordered v-if="facturasEmitidas.length > 0">
-            <q-item v-for="factura in facturasEmitidas" :key="factura.id" clickable v-ripple @click="editarFactura(factura.id)">
-              <q-item-section>Expiration date: {{ formatearFecha(factura.expirationDate) }}</q-item-section>
-              <q-item-section>Concepto: {{ factura.name }}</q-item-section> <!-- Mostrar el nombre del cliente -->
-              <q-item-section>Cantidad: {{ factura.price }}€</q-item-section>
-              <q-item-section><q-btn color="negative" @click="borrarFactura(factura)">Borrar factura</q-btn></q-item-section>
+            <q-item v-for="factura in facturasEmitidas" :key="factura.id" clickable v-ripple>
+              <q-item-section @click="editarFactura(factura.id)">Expiration date: {{ formatearFecha(factura.expirationDate) }}</q-item-section>
+              <q-item-section @click="editarFactura(factura.id)">Concepto: {{ factura.name }}</q-item-section> <!-- Mostrar el nombre del cliente -->
+              <q-item-section @click="editarFactura(factura.id)">Cantidad: {{ factura.price }}€</q-item-section>
+              <q-item-section v-if="userStore.userData.role.toLocaleLowerCase() !== 'employee'"><q-btn color="negative" @click="borrarFactura(factura)">Borrar factura</q-btn></q-item-section>
               <q-item-section side></q-item-section>
               <q-item-section side></q-item-section>
               <q-item-section side></q-item-section>
@@ -150,7 +150,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watchEffect} from "vue";
+import {computed, onMounted, ref, watch, watchEffect} from "vue";
 import {userDataStore} from "stores/userData";
 import {useQuasar} from "quasar";
 
@@ -191,6 +191,11 @@ const facturasRecibidas = computed(() => {
   }
 });
 const facturasTodas = computed(() => {
+  // Si facturas es undefined devolvemos un array vacío
+  if (facturas.value === undefined) {
+    return [];
+  }
+
   // Filtrar por estado de la factura
   if (filtroFacturaTodas.value.value === 'Todas' || filtroFacturaTodas.value.value === undefined) {
     return facturas.value;
@@ -219,6 +224,9 @@ const opcionesFiltroFactura = [
   { label: 'Pagadas', value: 'Pagado' }
 ];
 
+const basicAuth = 'Basic ' + btoa("user" + ':' + "user");
+const basicAuthAdmin = 'Basic ' + btoa("admin" + ':' + "admin");
+
 const clientes = userStore.userData.clients.map(c => {
   return { label: c.name, value: c.name }
 });
@@ -242,11 +250,31 @@ function formatearFecha(fecha) {
   return new Date(fecha).toLocaleDateString();
 }
 
-const ivaCalculado = computed(() => (baseImponible.value * 0.21).toFixed(2));
-const total = computed(() => (baseImponible.value + Number(ivaCalculado.value)).toFixed(2));
+const ivaCalculado = computed(() => (Number(baseImponible.value) * 0.21).toFixed(2));
+const total = computed(() => (Number(baseImponible.value) + Number(ivaCalculado.value)).toFixed(2));
 
 onMounted(() => {
   facturas.value = userStore.userData.bills;
+
+  if (userStore.userData.role.toLowerCase() !== "employee"){
+    fetch("http://127.0.0.1:8080/api/admin/getBills/", {
+        headers: {
+          'Authorization': basicAuthAdmin,
+        },
+      }
+    ).then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          facturas.value = data.data;
+          userStore.userData.bills = data.data;
+        } else {
+          console.log("Error al obtener las facturas");
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
 });
 
 function estadoFactura(factura) {
@@ -259,15 +287,12 @@ function estadoFactura(factura) {
   }
 }
 
-const basicAuth = 'Basic ' + btoa("user" + ':' + "user");
-
 function borrarFactura(factura) {
   compraDialog.value = false;
 
   fetch("http://127.0.0.1:8080/api/admin/deleteBill/" + factura.id, {
       headers: {
-        'Authorization': basicAuth,
-        'Content-Type': 'application/json'
+        'Authorization': basicAuthAdmin,
       },
       method: 'DELETE',
     }
@@ -389,6 +414,14 @@ function editarFactura(id) {
 }
 
 const toggleCompraDialog = (emitida = false) => {
+  //Limpiamos los campos
+  conceptoPago.value = '';
+  baseImponible.value = 0;
+  fechaFactura.value = '';
+  nombreCliente.value = '';
+  sent.value = "Emitida";
+  facturaActualId = "";
+
   compraDialog.value = true;
 
   if (emitida) {
