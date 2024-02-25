@@ -2,6 +2,8 @@
   <q-page>
     <p>Clientes</p>
     <div class="grid tmpl-3 row-gap-xs col-gap-xs q-pa-xl">
+      <q-btn @click="añaCliente" class="q-pa-md" color="primary" icon="add" label="Añadir cliente" />
+
       <q-card v-for="cliente in clients" :key="cliente.id" class="q-pa-md">
         <q-card-section>
           <q-item>
@@ -19,6 +21,8 @@
 
     <p>Empleados</p>
     <div class="grid tmpl-3 row-gap-xs col-gap-xs q-pa-xl">
+      <q-btn @click="añaEmpleado" class="q-pa-md" color="primary" icon="add" label="Añadir empleado" />
+
       <q-card v-for="employee in employees" :key="employee.id" class="q-pa-md">
         <q-card-section>
           <q-item>
@@ -40,8 +44,9 @@
         <q-form @submit.prevent="editCliente(clienteSeleccionado)">
           <q-input v-model="clienteSeleccionado.name" label="Nombre" />
           <q-input v-model="clienteSeleccionado.surname" label="Apellidos" />
-          <q-input v-model="clienteSeleccionado.email" label="Email" />
-          <q-input v-model="clienteSeleccionado.phone" label="Teléfono" />
+          <q-input v-model="clienteSeleccionado.username" label="Username" />
+          <q-input type="email" v-model="clienteSeleccionado.email" label="Email" />
+          <q-input type="tel" v-model="clienteSeleccionado.phone" label="Teléfono" />
         </q-form>
         <q-card-actions align="right" class="q-mt-md">
           <q-btn label="Cancelar" color="negative" @click="editandoCliente = false" />
@@ -58,8 +63,9 @@
         <q-form @submit.prevent="editEmployee(empleadoSeleccionado)">
           <q-input v-model="empleadoSeleccionado.name" label="Nombre" />
           <q-input v-model="empleadoSeleccionado.surname" label="Apellidos" />
-          <q-input v-model="empleadoSeleccionado.email" label="Email" />
-          <q-input v-model="empleadoSeleccionado.phone" label="Teléfono" />
+          <q-input v-model="empleadoSeleccionado.username" label="Username" />
+          <q-input type="email" v-model="empleadoSeleccionado.email" label="Email" />
+          <q-input type="tel" v-model="empleadoSeleccionado.phone" label="Teléfono" />
         </q-form>
         <q-card-actions align="right" class="q-mt-md">
           <q-btn label="Cancelar" color="negative" @click="editandoEmpleado = false" />
@@ -159,8 +165,20 @@ const editarEmpleado = (empleadoID) => {
   editandoEmpleado.value = true
 }
 
+const añaCliente = () => {
+  clienteSeleccionado.value = {}
+  editandoCliente.value = true
+}
+
+const añaEmpleado = () => {
+  empleadoSeleccionado.value = {}
+  editandoEmpleado.value = true
+}
+
 // Funciones para editar, eliminar y crear clientes y empleados
 function editCliente(cliente) {
+  cliente.role = "CLIENT"
+
   fetch("http://127.0.0.1:8080/api/admin/addClient", {
     method: 'POST',
     headers: {
@@ -177,12 +195,18 @@ function editCliente(cliente) {
           message: 'Cliente editado correctamente',
           icon: 'check'
         })
-        clients.value = clients.value.map(c => {
-          if (c.id === cliente.id) {
-            return cliente
-          }
-          return c
-        })
+        //Si la id del cliente ya existe, lo editamos, si no, lo añadimos
+        if (clients.value.find(c => c.id === cliente.id)) {
+          clients.value = clients.value.map(c => {
+            if (c.id === cliente.id) {
+              return cliente
+            }
+            return c
+          })
+        } else {
+          clients.value.push(cliente)
+        }
+
         editandoCliente.value = false
       } else {
         $q.notify({
@@ -241,6 +265,8 @@ function deleteCliente(cliente) {
 }
 
 function editEmployee(employee) {
+  employee.role = "EMPLOYEE"
+
   fetch("http://127.0.0.1:8080/api/admin/addEmployee", {
     method: 'POST',
     headers: {
@@ -257,12 +283,17 @@ function editEmployee(employee) {
           message: 'Empleado editado correctamente',
           icon: 'check'
         })
-        employees.value = employees.value.map(e => {
-          if (e.id === employee.id) {
-            return employee
-          }
-          return e
-        })
+        //Si la id del empleado ya existe, lo editamos, si no, lo añadimos
+        if (employees.value.find(e => e.id === employee.id)) {
+          employees.value = employees.value.map(e => {
+            if (e.id === employee.id) {
+              return employee
+            }
+            return e
+          })
+        } else {
+          employees.value.push(employee)
+        }
         editandoEmpleado.value = false
       } else {
         $q.notify({
