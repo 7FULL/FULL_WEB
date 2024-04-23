@@ -2,12 +2,12 @@
   <router-link :to="link">
     <q-item clickable>
       <q-item-section v-if="icon" avatar>
-        <q-icon :name="icon" />
+        <q-icon :name="icon" color="white"/>
       </q-item-section>
 
       <q-item-section>
-        <q-item-label>{{ title }}</q-item-label>
-        <q-item-label caption>{{ caption }}</q-item-label>
+        <q-item-label class="text-white">{{ title }}</q-item-label>
+        <q-item-label caption class="text-white">{{ caption }}</q-item-label>
       </q-item-section>
     </q-item>
   </router-link>

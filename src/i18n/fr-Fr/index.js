@@ -45,4 +45,6 @@ export default {
   passwordNotGood: "Mot de passe incorrect",
   adsTitle: "Publicité",
   config: "CONFIGURATION",
+  recaptachaIncalid: "Recaptcha invalide",
+  userOrPasswordError: "Nom d'utilisateur ou mot de passe incorrect",
 }

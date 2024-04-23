@@ -46,4 +46,6 @@ export default {
   config: "CONFIGURACIÓN",
   noStreamings: "No hay ningún streaming disponible",
   adsTitle: "Publicidad",
+  recaptachaIncalid: "Recaptcha invalido",
+  userOrPasswordError: "Usuario o contraseña incorrectos",
 }

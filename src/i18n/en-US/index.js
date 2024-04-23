@@ -45,4 +45,6 @@ export default {
   passwordNotGood: "Incorrect password",
   adsTitle: "Ads",
   config: "CONFIGURATION",
+  recaptachaIncalid: "Invalid recaptcha",
+  userOrPasswordError: "User or password incorrect",
 }

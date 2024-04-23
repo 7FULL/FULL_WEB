@@ -209,6 +209,10 @@
   color: red;
 }
 
+.overflow-hidden {
+  overflow: hidden;
+}
+
 .fs-xxs {
   font-size: 0.5rem;
 }
@@ -227,6 +231,54 @@
 
 .fs-lg {
   font-size: 1.5rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.tmpl-1 {
+  grid-template-columns: 1fr;
+}
+
+.tmpl-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.tmpl-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.col-gap-xs {
+  column-gap: 5%;
+}
+
+.col-gap-sm {
+  column-gap: 10%;
+}
+
+.col-gap-md {
+  column-gap: 15%;
+}
+
+.col-gap-lg {
+  column-gap: 20%;
+}
+
+.row-gap-xs {
+  row-gap: 5%;
+}
+
+.row-gap-sm {
+  row-gap: 10%;
+}
+
+.row-gap-md {
+  row-gap: 15%;
+}
+
+.row-gap-lg {
+  row-gap: 20%;
 }
 
 .fs-xl {

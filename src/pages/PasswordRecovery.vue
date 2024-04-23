@@ -101,7 +101,7 @@ const confirm = (e) => {
     confirmPasswordData.value.newPassword = "";
     confirmPasswordData.value.confirmPassword = "";
   } else {
-    fetch("http://127.0.0.1:5000/api/users/password/" + token, {
+    fetch("http://127.0.0.1:8080/api/employee/password/" + token, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
