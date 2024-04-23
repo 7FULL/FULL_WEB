@@ -45,20 +45,19 @@
     </div>
 
     <div v-if="playbackEnded" class="wlg flex flex-center bg-black">
-      <div class="text-h3 text-white">Transmisión finalizada</div>
+      <div class="text-h3 text-white">{{ $t('streamFinished') }}</div>
     </div>
 
     <!-- Chat -->
 
     <div
-      class="chat-container wsm bg-white"
+      class="chat-container wsm"
       v-if="conected"
       ref="chatContainer"
     >
       <div class="chat-messages" id="chat-messages">
         <div v-for="message in messages" :key="message.id" class="chat-message">
-          <div class="chat-message-author">{{ message.author }}</div>
-          <div class="chat-message-content">{{ message.content }}</div>
+          <q-chat-message :sent="message.author == 'Tu' ? true : false" :name="message.author" :text="[message.content]" />
         </div>
       </div>
       <div class="chat-input">
@@ -68,14 +67,14 @@
           @keyup.enter="sendMessage"
           outlined
           dense
-          placeholder="Escribe tu mensaje..."
+          :placeholder="$t('chatPlaceholder')"
           maxlength="100"
         />
         <q-btn
           @click="sendMessage"
           color="primary"
           dense
-          label="Enviar"
+          :label="$t('send')"
           class="q-ml-md"
         />
       </div>
@@ -92,7 +91,7 @@
       v-if="!conected && errorConnectingChat"
       class="wsm flex flex-center bg-white chat-container"
     >
-      <div class="text-h6 text-black">No se pudo conectar al chat</div>
+      <div class="text-h6 text-black">{{ $t("chatConnecionFailed") }}</div>
     </div>
   </div>
 </template>
@@ -116,7 +115,9 @@ import { io } from "socket.io-client";
 
 import { userDataStore } from "../stores/userData.js";
 
-const socket = io("http://localhost:3000");
+const socket = io("http://localhost:3050", {
+  query: "token=patata"
+});
 
 const props = defineProps(["src", "room"]);
 

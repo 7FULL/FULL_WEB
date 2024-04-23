@@ -3,14 +3,14 @@
     <!-- Formulario para recuperar la contraseña 2 simples campos y un boton de confirmar -->
     <q-card>
       <q-card-section class="wxl text-center">
-        <q-card-title class="text-h6">Ingresa tu nueva contraseña</q-card-title>
+        <q-card-title class="text-h6">{{$t("newPassword") }}</q-card-title>
       </q-card-section>
       <q-form class="q-pa-md flex flex-center" @submit="submit">
         <q-input
           :type="showEye ? 'password' : 'text'"
           outlined
           v-model="confirmPasswordData.newPassword"
-          label="Contraseña"
+          :label="$t('password')"
           class="wlg q-mt-md q-mb-md"
           required
           minlength="7"
@@ -27,7 +27,7 @@
           :type="showEyeConfirm ? 'password' : 'text'"
           outlined
           v-model="confirmPasswordData.confirmPassword"
-          label="Confirmar contraseña"
+          :label="$t('confirmPassword')"
           class="wlg q-mt-md q-mb-md"
           required
           minlength="7"
@@ -41,7 +41,7 @@
           </template>
         </q-input>
         <q-btn
-          label="Confirmar"
+          :label="$t('confirm')"
           color="primary"
           class="wlg q-mb-lg q-mt-md"
           @click="confirm"
@@ -96,7 +96,7 @@ const confirm = (e) => {
     confirmPasswordData.value.newPassword !=
     confirmPasswordData.value.confirmPassword
   ) {
-    showNotif("Las contraseñas no coinciden", "red-5");
+    showNotif($t('passwordNotMatch'), "red-5");
 
     confirmPasswordData.value.newPassword = "";
     confirmPasswordData.value.confirmPassword = "";
@@ -117,14 +117,14 @@ const confirm = (e) => {
           confirmPasswordData.value.confirmPassword = "";
           confirmPasswordData.value.newPassword = "";
 
-          showNotif("Contraseña cambiada correctamente");
+          showNotif($t('passwordChanged'));
 
           router.push({ name: "home" });
         } else if (data.status == 400) {
-          showNotif("Contraseña incorrecta", "red-5");
+          showNotif($t('passwordNotGood'), "red-5");
         } else {
           showNotif(
-            "Parece que hubo un error con nuestras bases de datos, por favor intente de nuevo más tarde",
+            $t('bbddErrorMSG'),
             "red-5"
           );
         }
@@ -133,7 +133,7 @@ const confirm = (e) => {
         console.log(exception);
 
         showNotif(
-          "Parece que hubo un error con nuestros servidores, por favor intente de nuevo más tarde",
+          $t('serverErrorMSG'),
           "red-5"
         );
       });

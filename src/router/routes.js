@@ -6,17 +6,17 @@ const routes = [
       {
         name: "home",
         path: "",
-        component: () => import("pages/IndexPage.vue"),
+        component: () => import("pages/StreamingList.vue"),
+      },
+      {
+        name: "ads",
+        path: "/ads",
+        component: () => import("pages/AdsPage.vue"),
       },
       {
         name: "viewProfile",
         path: "/viewProfile",
         component: () => import("pages/ViewProfile.vue"),
-      },
-      {
-        name: "profile",
-        path: "/profile/:name",
-        component: () => import("pages/Profile.vue"),
       },
       {
         name: "streaming",
@@ -27,16 +27,6 @@ const routes = [
         name: "streamings",
         path: "/streamings",
         component: () => import("pages/StreamingList.vue"),
-      },
-      {
-        name: "dms",
-        path: "/dms",
-        component: () => import("pages/DirectMessages.vue"),
-      },
-      {
-        name: "dm",
-        path: "/dm/:name",
-        component: () => import("pages/DirectMessage.vue"),
       },
       {
         name: "passwordRecovery",

@@ -1,10 +1,10 @@
 <template>
   <q-page class="flex flex-center">
     <div>
-      <p class="text-h6 q-mb-md">Parece que te has perdido</p>
+      <p class="text-h6 q-mb-md">{{ $t("lost") }}</p>
       <q-btn
         color="primary"
-        label="Volver a la página de inicio"
+        :label="$t('backHome')"
         @click="redirectToHome"
       />
     </div>

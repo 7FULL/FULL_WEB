@@ -1,6 +1,6 @@
 <template>
   <q-page class="padding_cero">
-    <div class="q-pa-md grid">
+    <div class="q-pa-md grid" v-if="streams.length > 0">
       <div
         v-for="(stream, index) in streams"
         :key="index"
@@ -9,7 +9,7 @@
         sm="6"
       >
         <router-link :to="'/streaming/' + stream.name">
-          <q-card>
+          <q-card class="bg-secondary redondito">
             <q-card-section class="text-center">
               <q-avatar>
                 <img
@@ -18,11 +18,23 @@
                   class="q-mb-md"
                 />
               </q-avatar>
-              <div class="text-h6 xx-large">{{ stream.name }}</div>
+              <div class="text-h6 xx-large">{{ stream.name.split("-0101-")[0] }}</div>
             </q-card-section>
           </q-card>
         </router-link>
       </div>
+    </div>
+    <div class="text-center q-pa-md absolute-center" v-else-if="loading">
+      <q-spinner-gears size="100px" color="secondary" />
+    </div>
+    <div class="text-center q-pa-md absolute-center" v-else>
+      <q-card class="wfc bg-secondary">
+        <q-card-section class="text-center">
+          <div class="text-h6 xx-large">
+            {{ $t("noStreamings") }}
+          </div>
+        </q-card-section>
+      </q-card>
     </div>
   </q-page>
 </template>
@@ -32,9 +44,11 @@ import { ref, onMounted } from "vue";
 
 const streams = ref([]);
 
+const loading = ref(true);
+
 //Lo hacemos en el mounted para que se ejecute cuando se cargue el DOM
-onMounted(() => {
-  fetch("http://localhost:8080/stat")
+onMounted(async () => {
+  await fetch("http://localhost:8080/stat")
     .then((response) => response.text())
     .then(async (data) => {
       // Procesar los datos XML
@@ -42,46 +56,31 @@ onMounted(() => {
       const xmlDoc = parser.parseFromString(data, "application/xml");
       const streamElements = xmlDoc.getElementsByTagName("stream");
 
-      // Recorrer los elementos de stream
-      for (let i = 0; i < streamElements.length; i++) {
-        const name =
-          streamElements[i].getElementsByTagName("name")[0].textContent;
+      if (streamElements.length > 0){
+        // Recorrer los elementos de stream
+        for (let i = 0; i < streamElements.length; i++) {
+          const name =
+            streamElements[i].getElementsByTagName("name")[0].textContent;
 
-        let aux = "";
+          let aux = "src/assets/img/logoUserDefault.png";
 
-        /*
-        await fetch(
-          "http://localhost:5000/api/users/getProfileByStreamName/" + name
-        )
-          .then((response) => response.blob())
-          .then((blob) => {
-            // Crear una URL de objeto para la imagen
-            if (blob.type === "application/json") {
-              aux = "src/assets/img/logoUserDefault.png";
-            } else {
-              const imageUrl = URL.createObjectURL(blob);
-              aux = imageUrl;
-            }
-          })
-          .catch((exception) => {
-            console.log(exception);
-            error.value.type = true;
-            error.value.message =
-              "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
-          });*/
+          streams.value.push({ name, photoUrl: aux });
 
-        //If there is no image, we use the default one
-        if (aux === "") {
-          aux = "src/assets/img/logoUserDefault.png";
+          loading.value = false;
         }
-
-        streams.value.push({ name, photoUrl: aux });
+      }else{
+        setTimeout(() => {
+          loading.value = false;
+        }, 1000);
       }
     })
     .catch((error) => {
       console.log("Error:", error);
+
+      loading.value = false;
     });
 });
+
 </script>
 
 <style scoped>
@@ -97,5 +96,9 @@ onMounted(() => {
 
 .xx-large {
   font-size: xx-large;
+}
+
+.redondito{
+  border-radius: 10px;
 }
 </style>

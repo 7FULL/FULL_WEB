@@ -10,12 +10,12 @@
         />
         <q-tab-panels v-model="activeTab" animated class="wxl">
           <q-tab-panel name="login" class="q-pt-xs q-pb-xs">
-            <h2 class="text-h6 q-mt-xs">Iniciar sesión</h2>
+            <h2 class="text-h6 q-mt-xs">{{ t("loginTab") }}</h2>
             <q-form @submit="login">
-              <q-input v-model="loginData.username" label="Usuario" required />
+              <q-input v-model="loginData.username" :label="t('user')" required />
               <q-input
                 v-model="loginData.password"
-                label="Contraseña"
+                :label="t('password')"
                 :type="showEyeLogin ? 'password' : 'text'"
                 required
                 minlength="7"
@@ -30,15 +30,15 @@
               </q-input>
               <q-item side inset-separator v-ripple class="q-mt-sm">
                 <q-item-section>
-                  <a href="#" class="text-primary" @click="restorePasswordPopUp"
-                    >¿Olvidaste tu contraseña?</a
+                  <a href="#" class="text-white" @click="restorePasswordPopUp"
+                    >{{ t("notRememberPassword") }}</a
                   >
                 </q-item-section>
               </q-item>
               <q-item class="pl-0">
                 <q-checkbox
                   v-model="loginData.remember"
-                  label="Recordarme"
+                  :label="t('rememberMe')"
                   class="flex"
                 />
               </q-item>
@@ -46,7 +46,7 @@
               <q-card-actions>
                 <q-btn
                   color="primary"
-                  label="Confirmar"
+                  :label="t('confirm')"
                   type="submit"
                   class="wxl"
                 />
@@ -54,22 +54,22 @@
             </q-form>
           </q-tab-panel>
           <q-tab-panel name="register" class="q-pt-xs q-pb-xs">
-            <h2 class="text-h6 q-mt-xs">Registrarse</h2>
+            <h2 class="text-h6 q-mt-xs">{{ t("register") }}</h2>
             <q-form @submit="register">
               <q-input
                 v-model="registerData.username"
-                label="Nombre"
+                :label="t('name')"
                 required
               />
               <q-input
                 v-model="registerData.email"
-                label="Correo electrónico"
+                :label="t('email')"
                 type="email"
                 required
               />
               <q-input
                 v-model="registerData.password"
-                label="Contraseña"
+                :label="t('password')"
                 :type="showEye ? 'password' : 'text'"
                 required
                 minlength="7"
@@ -84,7 +84,7 @@
               </q-input>
               <q-input
                 v-model="registerData.confirmPassword"
-                label="Confirmar contraseña"
+                :label="t('confirmPassword')"
                 :type="showEyeConfirm ? 'password' : 'text'"
                 required
                 minlength="7"
@@ -99,7 +99,7 @@
               </q-input>
               <q-input
                 v-model="registerData.phone"
-                label="Número de teléfono"
+                :label="t('phoneNumber')"
                 type="tel"
                 required
                 class="q-mb-md"
@@ -111,13 +111,13 @@
                 required
                 class="q-mt-sm"
               >
-                Acepto los términos y condiciones
+                {{ t("agree") }}
               </q-checkbox>
               <GoogleLogin :callback="googleRegistered" />
               <q-card-actions>
                 <q-btn
                   color="primary"
-                  label="Confirmar"
+                  :label="t('confirm')"
                   type="submit"
                   class="wxl"
                 />
@@ -153,8 +153,8 @@
   <!-- PopUp para el has olvidado la contraseña -->
   <PopUp
     :open="restorePassword"
-    title="Recuperacion de contraseña"
-    msg="Se ha enviado un correo electrónico a tu cuenta de correo electrónico. Sigue las instrucciones para recuperar tu contraseña."
+    :title="t('restorePasswordTitle')"
+    :msg="t('restorePasswordMSG')"
     :persistent="true"
     :cancel="false"
     :input="false"
@@ -170,6 +170,9 @@ import { userDataStore } from "../stores/userData.js";
 import { useQuasar } from "quasar";
 import { decodeCredential } from "vue3-google-login";
 import PopUp from "./PopUp.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const showEyeConfirm = ref(true);
 
@@ -184,7 +187,7 @@ const restorePassword = ref(false);
 const restorePasswordPopUp = () => {
   if (loginData.value.username == "") {
     showNotif(
-      "Debes introducir un nombre de usuario o correo electrónico",
+      t("restorePasswordErrorNoUsername"),
       "red-5"
     );
     return;
@@ -205,14 +208,14 @@ const restorePasswordPopUp = () => {
       } else {
         error.value.type = true;
         error.value.message =
-          "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+          t("serverErrorMSG");
       }
     })
     .catch((exception) => {
       console.log(exception);
       error.value.type = true;
       error.value.message =
-        "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+        t("serverErrorMSG");
     });
 
   restorePassword.value = true;
@@ -232,18 +235,18 @@ onMounted(() => {
 const tabs = [
   {
     name: "login",
-    label: "Iniciar sesión",
+    label: t("loginTab"),
   },
   {
     name: "register",
-    label: "Registrarse",
+    label: t("register"),
   },
 ];
 
 const emailVerified = () => {
   userData.value.emailVerified = true;
   userStore.userData = userData.value;
-  showNotif("Email verificado correctamente");
+  showNotif(t("emailVerifiedMSG"));
 };
 
 const googleLogged = (response) => {
@@ -384,29 +387,29 @@ const logged = async (name = "") => {
         userData.value.name = data.result.username;
         userData.value.email = data.result.email;
         userData.value.emailVerified = data.result.emailVerified;
-        userData.value.streamKey = data.result.streamKey;
 
         //console.log(userData.value);
 
         if (data.result.profile != "") {
-          userData.value.profile = data.result.profile;
+          userData.value.profile = "http://127.0.0.1:5000/"+data.result.profile;
 
+          /*
           await fetch(
             "http://127.0.0.1:5000/api/users/profile/" + userData.value.name
           )
-            .then((response) => response.blob())
-            .then((blob) => {
-              // Crear una URL de objeto para la imagen
-              const imageUrl = URL.createObjectURL(blob);
-
-              aux = imageUrl;
+            .then((response) => response.json())
+            .then((data) => {
+              if(data.status == 200){
+                aux = data.result;
+              }
             })
             .catch((exception) => {
               console.log(exception);
               error.value.type = true;
               error.value.message =
-                "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+                t("serverErrorMSG");
             });
+          */
         }
 
         userStore.userData = userData.value;
@@ -417,7 +420,7 @@ const logged = async (name = "") => {
           isVerifying.value = true;
         }
 
-        showNotif("Bienvenido/a de vuelta " + userData.value.name);
+        showNotif(t("welcomeBack") + userData.value.name);
         emit("logged");
       } else if (data.status == 404) {
         error.value.type = true;
@@ -425,7 +428,7 @@ const logged = async (name = "") => {
       } else {
         error.value.type = true;
         error.value.message =
-          "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+          t("serverErrorMSG");
       }
 
       if (aux != null) {
@@ -436,7 +439,7 @@ const logged = async (name = "") => {
       console.log(exception);
       error.value.type = true;
       error.value.message =
-        "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+        t("serverErrorMSG");
     });
 };
 
@@ -487,14 +490,14 @@ const login = async (e) => {
       } else {
         error.value.type = true;
         error.value.message =
-          "Parece que hay un problema con nuestras bases de datos. Inténtelo de nuevo más tarde";
+          t("bbddErrorMSG");
       }
     })
     .catch((exception) => {
       console.log(exception);
       error.value.type = true;
       error.value.message =
-        "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+        t("serverErrorMSG");
     });
 
   // Resetear el formulario
@@ -510,7 +513,7 @@ const register = async (e) => {
 
   if (registerData.value.password != registerData.value.confirmPassword) {
     error.value.type = true;
-    error.value.message = "Las contraseñas no coinciden";
+    error.value.message = t("passwordNotMatch");
   } else if (registerData.value.agree == true && registerData.value.captcha) {
     if (!registerData.value.username.includes("@")) {
       userData.value.name = registerData.value.username;
@@ -534,26 +537,26 @@ const register = async (e) => {
         } else if (data.status == 409) {
           error.value.type = true;
           error.value.message =
-            "El nombre de usuario o el correo electrónico ya están en uso";
+            t("userAlreadyExists");
         } else {
           error.value.type = true;
           error.value.message =
-            "Parece que hay un problema con nuestras bases de datos. Inténtelo de nuevo más tarde";
+            t("bbddErrorMSG");
         }
       })
       .catch((exception) => {
         console.log(exception);
         error.value.type = true;
         error.value.message =
-          "Parece que hay un problema con nuestros servidores. Inténtelo de nuevo más tarde";
+          t("serverErrorMSG");
       });
   } else {
     if (!registerData.value.captcha) {
       error.value.type = true;
-      error.value.message = "Debes completar el captcha";
+      error.value.message = t("captchaError")
     } else {
       error.value.type = true;
-      error.value.message = "Debe aceptar los términos y condiciones";
+      error.value.message = t("agreeError")
     }
   }
 

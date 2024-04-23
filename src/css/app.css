@@ -7,6 +7,18 @@
   width: 75%;
 }
 
+.hxxs {
+  height: 5%;
+}
+
+.ml-xs {
+  margin-left: 5%;
+}
+
+.ml-sm {
+  margin-left: 10%;
+}
+
 .wmd {
   width: 50%;
 }
@@ -39,6 +51,10 @@
   height: 10%;
 }
 
+.hxxxs {
+  height: 2%;
+}
+
 .wxls {
   width: 90%;
 }
@@ -53,6 +69,24 @@
 
 .wsms {
   width: 15%;
+}
+
+.wfc{
+  width: fit-content;
+}
+
+.w19{
+  width: 19%;
+}
+
+.flexCenter{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 100%;
+
+  width: 100%;
 }
 
 .hxls {
@@ -252,7 +286,7 @@ textarea {
 }
 
 div[class="q-pa-md q-gutter-sm"] {
-  margin-top: -1.4%;
+  margin-top: -1.45%;
 }
 
 a {

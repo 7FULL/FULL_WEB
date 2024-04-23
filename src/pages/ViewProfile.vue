@@ -590,7 +590,7 @@ const editProfile = async () => {
             }
           } else {
             aux2 = true;
-            shoqNotif("Foto de perfil actualizada");
+            showNotif("Foto de perfil actualizada");
           }
         })
         .catch((exception) => {
