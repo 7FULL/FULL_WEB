@@ -284,6 +284,8 @@ const closeSession = () => {
   dropdownLogin.value = false;
   dropdown.value = false;
 
+  leftDrawerOpen.value = false;
+
   if (localStorage.getItem("username") != null) {
     localStorage.removeItem("username");
   }
