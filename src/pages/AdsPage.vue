@@ -10,7 +10,7 @@
         map-options
         class="q-mb-xl"
       />
-      <div class="flex">
+      <div class="flex text-center">
         <q-uploader
           :url="url"
           accept="image/*"
@@ -44,7 +44,9 @@
             </div>
           </template>
         </q-uploader>
-        <img :src="carteles[0].img">
+      </div>
+      <div class="q-mt-xl">
+        <img :src="getCartelImg()" class="wlg">
       </div>
     </div>
   </div>
@@ -59,23 +61,23 @@ const userStore = userDataStore()
 const carteles = ref([{
   value: 'cartel1',
   label: 'Cartel 1',
-  img: "../assets/img/cartel1.jpg"
+  img: "http://127.0.0.1:5000/static/publi/cartel1/cartel1.png"
 }, {
   value: 'cartel2',
   label: 'Cartel 2',
-  img: "../assets/img/cartel2.jpg"
+  img: "http://127.0.0.1:5000/static/publi/cartel2/cartel2.png"
 }, {
   value: 'cartel3',
   label: 'Cartel 3',
-  img: "../assets/img/cartel3.jpg"
+  img: "http://127.0.0.1:5000/static/publi/cartel3/cartel3.png"
 }, {
   value: 'cartel4',
   label: 'Cartel 4',
-  img: "../assets/img/cartel4.jpg"
+  img: "http://127.0.0.1:5000/static/publi/cartel4/cartel4.png"
 }, {
   value: 'cartel5',
   label: 'Cartel 5',
-  img: "../assets/img/cartel5.jpg"
+  img: "http://127.0.0.1:5000/static/publi/cartel5/cartel5.png"
 }
 ])
 const cartel = ref('cartel1')
@@ -93,6 +95,16 @@ function showNotif(msg, color = "gray-4") {
     timeout: 1500,
     progress: true,
   });
+}
+
+const getCartelImg = () => {
+  for (const c of carteles.value) {
+
+    console.log(c.value, cartel.value)
+    if (c.value === cartel.value) {
+      return c.img
+    }
+  }
 }
 
 const upload = (scope) => {

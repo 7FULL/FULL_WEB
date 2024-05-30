@@ -240,6 +240,12 @@ const linksList = [
     icon: "person",
     link: "/viewProfile",
   },
+  {
+    title: "Support",
+    caption: "Soporte por una IA",
+    icon: "support_agent",
+    link: "/support"
+  }
 ];
 
 const leftDrawerOpen = ref(false);

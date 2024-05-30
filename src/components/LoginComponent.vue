@@ -30,7 +30,7 @@
               </q-input>
               <q-item side inset-separator v-ripple class="q-mt-sm">
                 <q-item-section>
-                  <a href="#" class="text-white" @click="restorePasswordPopUp"
+                  <a href="#" @click="restorePasswordPopUp"
                     >{{ t("notRememberPassword") }}</a
                   >
                 </q-item-section>
